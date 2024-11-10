@@ -1,0 +1,78 @@
+This database included information from a music sales industry.
+
+#1 Show Customers (their full names, customer ID, and country) who are not in the US. 
+
+SELECT FirstName, LastName, CustomerId, Country FROM customers
+WHERE Country <> 'USA';
+
+#2 Show only the Customers from Brazil.
+
+SELECT FirstName, LastName, Country FROM customers
+WHERE Country = 'Brazil';
+
+#3 Find the Invoices of customers who are from Brazil. The resulting table should show the customer's full name, Invoice ID, Date of the invoice, and billing country.
+
+SELECT InvoiceId, InvoiceDate, BillingCountry, customers.FirstName, customers.LastName FROM invoices
+INNER JOIN customers on customers.CustomerId = invoices.CustomerId
+WHERE invoices.BillingCountry = 'Brazil';
+
+#4 Show the Employees who are Sales Agents.
+
+SELECT FirstName, LastName FROM employees
+WHERE Title = 'Sales Support Agent';
+
+#5 Find a unique/distinct list of billing countries from the Invoice table.
+
+SELECT distinct BillingCountry FROM invoices;
+
+#6 How many Invoices were there in 2009?
+
+SELECT COUNT(InvoiceDate) FROM invoices
+WHERE InvoiceDate like '2009%';
+
+#7 What are the total sales for 2009?
+
+SELECT SUM(Total) FROM invoices
+WHERE InvoiceDate like '2009%';
+
+#8 Write a query that includes the purchased track name with each invoice line ID.
+
+SELECT tracks.TrackId, tracks.Name, invoice_items.InvoiceLineId
+FROM tracks
+INNER JOIN invoice_items ON invoice_items.TrackId = tracks.TrackId;
+
+#9 Write a query that includes the purchased track name AND artist name with each invoice line ID.
+
+SELECT tracks.TrackId, tracks.Name, invoice_items.InvoiceLineId, artists.ArtistId
+FROM tracks
+INNER JOIN invoice_items ON invoice_items.TrackId = tracks.TrackId
+INNER JOIN artists ON artists.ArtistID = tracks.TrackId;
+
+#10 Provide a query that shows all the Tracks, and include the Album name, Media type, and Genre.
+
+SELECT tracks.Name Track, albums.Title Album, media_types.Name Type, genres.Name Genre
+FROM tracks
+INNER JOIN albums ON albums.AlbumId = tracks.AlbumId
+INNER JOIN media_types ON media_types.MediaTypeId = tracks.MediaTypeId
+INNER JOIN genres ON genres.GenreId = tracks.GenreId
+ORDER BY albums.Title;
+
+#11 Show the total sales made by each sales agent.
+
+SELECT employees.FirstName, employees.LastName, SUM(invoices.Total) AS TotalSales
+FROM invoices
+INNER JOIN customers ON customers.CustomerId = invoices.CustomerId
+INNER JOIN employees ON employees.EmployeeId = customers.SupportRepId
+WHERE employees.EmployeeId IN (3, 4, 5)
+GROUP BY employees.FirstName, employees.LastName
+ORDER BY TotalSales DESC;
+
+#12 Which sales agent made the most dollars in sales in 2009?
+
+SELECT employees.FirstName, employees.LastName, SUM(invoices.Total) AS TotalSales
+FROM invoices
+INNER JOIN customers ON customers.CustomerId = invoices.CustomerId
+INNER JOIN employees ON employees.EmployeeId = customers.SupportRepId
+WHERE InvoiceDate like '2009%'
+GROUP BY employees.FirstName, employees.LastName
+ORDER BY TotalSales DESC;
